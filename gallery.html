@@ -6,12 +6,7 @@
 		<link rel="stylesheet" href="css/fsgallery.css" type="text/css" />
 		<script type="text/javascript">
 			window.addEvent('domready',function(){
-				new FSGallery([
-						'http://www.metropol.hu/files/gallery/1338810497erzsebet_es_fulop.jpg',
-						'http://www.metropol.hu/files/gallery/1338810552footgolf.jpg',
-						'http://www.metropol.hu/files/gallery/1338810730madonnakoncert2.jpg'
-					],{title:'képgaléria'}
-				);
+				(new FSGallery([],{title:'képgaléria',baseUrl:'http://www.metropol.hu/'})).loadJSON('http://www.metropol.hu/gallery.php?gid=1236&json');
 			});
 		</script>
 	</head>

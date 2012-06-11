@@ -6,6 +6,7 @@
 var FSGalleryImage = new Class({
 	url : '',
 	title : '',
+	description : '',
 	size : {
 		width : 0,
 		height : 0
@@ -17,7 +18,8 @@ var FSGallery = new Class({
 		autoResize: true,
 		mouseWheel: true,
 		keyControl: true,
-		title: ''
+		title: '',
+		baseUrl: '',
 	},
 	initialize: function(images,options) {
 		this.Gallery = null;
@@ -25,6 +27,7 @@ var FSGallery = new Class({
 		this.imageIndex = -1;
 		this.imageCount = -1;
 		this.images = null;
+		this.isLoading = false;
 
 		this.setOptions(options);
 
@@ -37,8 +40,21 @@ var FSGallery = new Class({
 		
 		this.Gallery.addEvent('click',this.next.bind(this));
 	},
+	loadJSON: function(url) {
+		if(!url || this.isLoading) return;
+		new Request.JSON({
+			url : url,
+			onSuccess: function(data){
+				if(data){
+					this.loadImages(data);
+				}
+			}.bind(this)
+		}, this).get();
+	},
 	loadImages: function(images) {
 		(function(){
+			this.isLoading = true;
+
 			var fakeContainer = new Element('div',{
 				styles : {
 					position : 'absolute',
@@ -57,8 +73,9 @@ var FSGallery = new Class({
 				fakeImg.addEvent('load',(function() {
 					document.body.adopt(fakeImg);
 					var fsImage = new FSGalleryImage();
-					fsImage.url = fakeImg.src;
-					fsImage.title = 'Kép';
+					fsImage.url = fakeImg.get('src');
+					fsImage.title = fakeImg.get('title');
+					fsImage.description = fakeImg.get('alt');
 					fsImage.size = fakeImg.getSize();
 					if (this.images==null) {
 						this.images=new Array();
@@ -71,9 +88,10 @@ var FSGallery = new Class({
 					}
 					fakeImg.dispose();
 				}).bind(this));
-				fakeImg.set('src',image);
+				fakeImg.set('src',this.options.baseUrl + image.url).set('title',image.title).set('alt',image.description);
 			},this);
 			fakeContainer.dispose();
+			this.update();
 		}).delay(0,this);
 	},
 	createElements: function() {
@@ -83,11 +101,22 @@ var FSGallery = new Class({
 				top : 0,
 				left: 0,
 				right: 0,
-				bottom: 0
+				bottom: 0,
+				'z-index': 65535
 			},
 			class: 'fs_loading'
 		});
-		container.set('id','fs-gallery-container');
+		container.set('id','fs-gallery-container').adopt(new Element('div',{
+			styles : {
+				position: 'relative',
+				top: 0,
+				left: 0,
+				height: '100%',
+				width: '100%',
+				'background-color': 'black',
+				opacity: 0.7
+			}
+		}));
 		var titleBar = new Element('div',{
 			styles : {
 				position: 'absolute',
@@ -160,35 +189,44 @@ var FSGallery = new Class({
 		e.stop();
 	},
 	next: function() {
-		this.imageIndex ++;
-		if (this.imageIndex > this.imageCount) this.imageIndex = 0;
-		this.imageContainer.tween('opacity',1,0);
-		this.imageContainer.set( 'src',this.images[this.imageIndex].url );
-		this.imageContainer.tween('opacity',0,1);
-		this.update();
+		if (this.images) {
+			this.imageIndex ++;
+			if (this.imageIndex > this.imageCount) this.imageIndex = 0;
+			this.imageContainer.tween('opacity',1,0);
+			this.imageContainer.set( 'src',this.images[this.imageIndex].url );
+			this.Gallery.getElements( 'h1' ).set( 'text', this.images[this.imageIndex].description );
+			this.update();
+			this.imageContainer.tween('opacity',0,1);
+		}
 	},
 	prev: function() {
-		this.imageIndex --;
-		this.imageContainer.tween('opacity',1,0);
-		if (this.imageIndex < 0) this.imageIndex =  this.imageCount;
-		this.imageContainer.set( 'src',this.images[this.imageIndex].url );
-		this.imageContainer.tween('opacity',0,1);
-		this.update();
+		if (this.images) {
+			this.imageIndex --;
+			this.imageContainer.tween('opacity',1,0);
+			if (this.imageIndex < 0) this.imageIndex =  this.imageCount;
+			this.imageContainer.set( 'src',this.images[this.imageIndex].url );
+			this.Gallery.getElements( 'h1' ).set( 'text', this.images[this.imageIndex].description );
+			this.update();
+			this.imageContainer.tween('opacity',0,1);
+		}
 	},
 	update: function() {
-		var size = this.Gallery.getSize();
-		size.x = size.x-64;
-		size.y = size.y-96;
-		if ( (size.x>=this.images[this.imageIndex].size.x) && (size.y>=this.images[this.imageIndex].size.y) ) {
-			size.x = this.images[this.imageIndex].size.x;
-			size.y = this.images[this.imageIndex].size.y;
-		} else {
-			var ratio = Math.min( (size.x / this.images[this.imageIndex].size.x) , (size.y / this.images[this.imageIndex].size.y) );
-			size.x = this.images[this.imageIndex].size.x * ratio;
-			size.y = this.images[this.imageIndex].size.y * ratio;
+		if (this.imageIndex>=0) {
+			var size = this.Gallery.getSize();
+			size.x = size.x-64;
+			size.y = size.y-96;
+			if ( (size.x>=this.images[this.imageIndex].size.x) && (size.y>=this.images[this.imageIndex].size.y) ) {
+				size.x = this.images[this.imageIndex].size.x;
+				size.y = this.images[this.imageIndex].size.y;
+			} else {
+				var ratio = Math.min( (size.x / this.images[this.imageIndex].size.x) , (size.y / this.images[this.imageIndex].size.y) );
+				size.x = this.images[this.imageIndex].size.x * ratio;
+				size.y = this.images[this.imageIndex].size.y * ratio;
+			}
+			this.imageContainer.setStyle('width', size.x );
+			this.imageContainer.setStyle('height', size.y );
 		}
-		this.imageContainer.setStyle('width', size.x );
-		this.imageContainer.setStyle('height', size.y );
+		this.isLoading = false;
 	}
 
 });
