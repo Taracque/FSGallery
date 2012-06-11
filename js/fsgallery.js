@@ -240,9 +240,8 @@ var FSGallery = new Class({
 				size.x = this.images[this.imageIndex].size.x * ratio;
 				size.y = this.images[this.imageIndex].size.y * ratio;
 			}
-			this.imageContainer.setStyle('width', size.x );
-			this.image.setStyle('width', size.x );
-			this.image.setStyle('height', size.y );
+			this.imageContainer.setStyles({'width': size.x, 'height' : size.y});
+			this.image.setStyles({'width': size.x, 'height' : size.y});
 		}
 		this.isLoading = false;
 	}
