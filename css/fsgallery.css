@@ -1,0 +1,18 @@
+.fs_closeBox {
+	background: transparent url(../images/window-close.png) no-repeat center;
+}
+
+.fs_titleBar {
+	background: #4f4f4f	-webkit-linear-gradient(bottom, #000 33%, #222 67%);
+}
+
+.fs_titleBar h1 {
+	color: white;
+	margin: 0;
+	padding: 0;
+	line-height: 28px;
+	height: 32px;
+}
+.fs_loading {
+	background: transparent url(../images/ajax_loader_gray_512.gif) no-repeat center;
+}
