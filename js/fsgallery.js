@@ -110,7 +110,7 @@ var FSGallery = new Class({
 				bottom: 0,
 				'z-index': 65535
 			},
-			class: 'fs_loading'
+			'class': 'fs_loading'
 		});
 		container.set('id','fs-gallery-container').adopt(new Element('div',{
 			styles : {
@@ -132,7 +132,7 @@ var FSGallery = new Class({
 				height: '32px',
 				opacity: 0.7
 			},
-			class: 'fs_titleBar'
+			'class': 'fs_titleBar'
 		}).adopt(new Element('h1',{text: this.options.title}));
 		
 		var closeBox = new Element('div',{
@@ -143,7 +143,7 @@ var FSGallery = new Class({
 				bottom:0,
 				width: '32px'
 			},
-			class : 'fs_closeBox'
+			'class' : 'fs_closeBox'
 		});
 		closeBox.addEvent('click', this.close.bind(this) );
 		titleBar.adopt( closeBox );
