@@ -71,12 +71,12 @@ var FSGallery = new Class({
 					display: 'none'
 				}
 			});
-			document.body.adopt(fakeContainer);
+			document.id(document.body).adopt(fakeContainer);
 			Array.each(images,function(image,idx){
 				var fakeImg = new Element('img');
 				fakeContainer.adopt(fakeImg);
 				fakeImg.addEvent('load',(function() {
-					document.body.adopt(fakeImg);
+					document.id(document.body).adopt(fakeImg);
 					var fsImage = new FSGalleryImage();
 					fsImage.url = fakeImg.get('src');
 					fsImage.title = fakeImg.get('title');
@@ -185,7 +185,7 @@ var FSGallery = new Class({
 			this.Gallery.setStyle('position','relative');
 			element.adopt( this.Gallery );	
 		} else {
-			document.body.adopt( this.Gallery );
+			document.id(document.body).adopt( this.Gallery );
 		}
 	},
 	close: function() {
