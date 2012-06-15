@@ -73,27 +73,31 @@ var FSGallery = new Class({
 			});
 			document.id(document.body).adopt(fakeContainer);
 			Array.each(images,function(image,idx){
-				var fakeImg = new Element('img');
-				fakeContainer.adopt(fakeImg);
-				fakeImg.addEvent('load',(function() {
-					document.id(document.body).adopt(fakeImg);
-					var fsImage = new FSGalleryImage();
-					fsImage.url = fakeImg.get('src');
-					fsImage.title = fakeImg.get('title');
-					fsImage.description = fakeImg.get('alt');
-					fsImage.size = fakeImg.getSize();
-					if (this.images==null) {
-						this.images=new Array();
+				var fakeImg = new Element('img',{
+					alt : image.description,
+					title : image.title,
+					events : {
+						load: function() {
+							document.id(document.body).adopt(fakeImg);
+							var fsImage = new FSGalleryImage();
+							fsImage.url = fakeImg.get('src');
+							fsImage.title = fakeImg.get('title');
+							fsImage.description = fakeImg.get('alt');
+							fsImage.size = fakeImg.getSize();
+							if (this.images==null) {
+								this.images=new Array();
+							}
+							this.images.push( fsImage );
+							this.imageCount++;
+							if (this.imageIndex == -1) {
+								this.Gallery.removeClass('fs_loading');
+								this.next();
+							}
+							fakeImg.dispose();
+						}.bind(this)
 					}
-					this.images.push( fsImage );
-					this.imageCount++;
-					if (this.imageIndex == -1) {
-						this.Gallery.removeClass('fs_loading');
-						this.next();
-					}
-					fakeImg.dispose();
-				}).bind(this));
-				fakeImg.set('src',this.options.baseUrl + image.url).set('title',image.title).set('alt',image.description);
+				});
+				fakeImg.set('src',this.options.baseUrl + image.url).inject(fakeContainer);
 			},this);
 			fakeContainer.dispose();
 			this.update();
