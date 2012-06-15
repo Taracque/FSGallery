@@ -20,8 +20,12 @@ var FSGallery = new Class({
 		keyControl: true,
 		title: '',
 		baseUrl: '',
+		marginRight : 32,
+		marginLeft : 32,
+		marginTop : 32,
+		marginBottom: 32
 	},
-	initialize: function(images,options) {
+	initialize: function(element,options) {
 		this.Gallery = null;
 		this.imageContainer = null;
 		this.imageIndex = -1;
@@ -32,8 +36,7 @@ var FSGallery = new Class({
 
 		this.setOptions(options);
 
-		this.createElements();
-		this.loadImages(images);
+		this.createElements( element );
 
 		if(this.options.mouseWheel || this.options.useSlider) this.Gallery.addEvent('mousewheel', this.wheelTo.bind(this));
 		if(this.options.autoResize) window.addEvent('resize', this.update.bind(this) );
@@ -51,6 +54,7 @@ var FSGallery = new Class({
 				}
 			}.bind(this)
 		}, this).get();
+		return this;
 	},
 	loadImages: function(images) {
 		(function(){
@@ -94,8 +98,9 @@ var FSGallery = new Class({
 			fakeContainer.dispose();
 			this.update();
 		}).delay(0,this);
+		return this;
 	},
-	createElements: function() {
+	createElements: function( element ) {
 		var container = new Element('div',{
 			styles: {
 				position : 'fixed',
@@ -146,32 +151,42 @@ var FSGallery = new Class({
 		var imgContainer = new Element('div',{
 			styles : {
 				position: 'absolute',
-				right: '32px',
-				top:'64px',
-				bottom:'32px',
-				left: '32px',
-				margin: 'auto auto'
+				right: this.options.marginRight,
+				top: this.options.marginTop + 32,
+				bottom:this.options.marginBottom,
+				left: this.options.marginLeft,
+				margin: '0'
 			},
 			tween : {duration: 'short'}
 		});
 		
-		var image = new Element('img');
+		var image = new Element('img',{
+			styles : {
+				display: 'block',
+				margin: 'auto'
+			}
+		});
 		var description = new Element('p',{
 			styles : {
 				'text-align' : 'center',
-				color : 'white'
+				color : 'white',
+				margin : 'auto auto'
 			}
 		});
-		imgContainer.adopt( [ image , description ] );
+		imgContainer.adopt( [ image, description ] );
 		this.image = image;
 		this.imageContainer = imgContainer;
 
-		container.adopt( titleBar );
-		container.adopt( imgContainer );
+		container.adopt( [ titleBar, imgContainer ] );
 
 		this.Gallery = container;
-		
-		document.body.adopt( this.Gallery );
+
+		if (element) {
+			this.Gallery.setStyle('position','relative');
+			element.adopt( this.Gallery );	
+		} else {
+			document.body.adopt( this.Gallery );
+		}
 	},
 	close: function() {
 		if (this.Gallery) {
@@ -179,6 +194,7 @@ var FSGallery = new Class({
 		}
 		if(this.options.autoResize) window.removeEvent('resize', this.update.bind(this) );
 		if(this.options.keyControl) document.removeEvent('keydown', this.keyTo.bind(this) );
+		this.fireEvent('close');
 	},
 	wheelTo: function(e) {
 		if(e.wheel > 0) this.prev();
@@ -227,9 +243,10 @@ var FSGallery = new Class({
 	},
 	update: function() {
 		if (this.imageIndex>=0) {
+			var gallerySize = this.imageContainer.getSize();
 			var size = this.Gallery.getSize();
-			size.x = size.x-64;
-			size.y = size.y-128;
+			size.x = size.x-(this.options.marginLeft + this.options.marginRight);
+			size.y = size.y-(this.options.marginTop + this.options.marginBottom + 32);
 			if ( (size.x>=this.images[this.imageIndex].size.x) && (size.y>=this.images[this.imageIndex].size.y) ) {
 				size.x = this.images[this.imageIndex].size.x;
 				size.y = this.images[this.imageIndex].size.y;
@@ -238,8 +255,7 @@ var FSGallery = new Class({
 				size.x = this.images[this.imageIndex].size.x * ratio;
 				size.y = this.images[this.imageIndex].size.y * ratio;
 			}
-			this.imageContainer.setStyles({'width': size.x, 'height' : size.y});
-			this.image.setStyles({'width': size.x, 'height' : size.y});
+			this.image.setStyles({'width': size.x, 'height' : size.y, 'margin-top' : ( (gallerySize.y - size.y) / 2)});
 		}
 		this.isLoading = false;
 	}

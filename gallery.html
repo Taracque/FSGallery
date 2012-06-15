@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="css/fsgallery.css" type="text/css" />
 		<script type="text/javascript">
 			window.addEvent('domready',function(){
-				(new FSGallery([],{title:'képgaléria',baseUrl:'http://www.metropol.hu/'})).loadJSON('http://www.metropol.hu/gallery.php?gid=1236&json');
+				(new FSGallery(document.id('gallery_here'),{title:'képgaléria',marginBottom:48,marginTop:0,autoResize:false,baseUrl:'http://www.metropol.hu/'})).loadJSON('http://www.metropol.hu/gallery.php?gid=1236&json').addEvent('close',function(){ document.id('gallery_here').dispose(); });
 			});
 		</script>
 	</head>
@@ -27,6 +27,7 @@
 		<p>some text here</p>
 		<h1>Fullscreen gallery test</h1>
 		<p>some text here</p>
+		<div id="gallery_here" style="width:600px;height:480px;"></div>
 		<h1>Fullscreen gallery test</h1>
 		<p>some text here</p>
 		<h1>Fullscreen gallery test</h1>
