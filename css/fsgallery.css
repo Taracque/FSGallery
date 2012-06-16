@@ -6,11 +6,21 @@
 	background: #4f4f4f	-webkit-linear-gradient(bottom, #000 33%, #222 67%);
 }
 
-.fs_titleBar h1 {
+.fs_titleBar span {
 	color: white;
 	margin: 0 16px;
 	padding: 0;
 	line-height: 32px;
+	font-size: 14px;
+	text-align: center;
+	display: block;
+	left: 0;
+	right: 32px;
+	top:0;
+	bottom:0;
+	position: absolute;
+}
+.fs_titleBar span strong {
 	font-size: 16px;
 }
 .fs_loading {

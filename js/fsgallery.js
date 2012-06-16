@@ -136,7 +136,7 @@ var FSGallery = new Class({
 				opacity: 0.7
 			},
 			'class': 'fs_titleBar'
-		}).adopt(new Element('h1',{text: this.options.title}));
+		}).adopt(new Element('span',{text: this.options.title}));
 		
 		var closeBox = new Element('div',{
 			styles : {
@@ -224,7 +224,7 @@ var FSGallery = new Class({
 			(function(){
 				this.image.set( 'src',this.images[imgidx].url );
 				this.imageContainer.getElements('p').set( 'text', this.images[imgidx].title );
-				this.Gallery.getElements( 'h1' ).set( 'text', (imgidx+1) + "/" + (this.imageCount + 1) + " - " + this.images[imgidx].description );
+				this.Gallery.getElements( 'span' ).set( 'html', (imgidx+1) + "/" + (this.imageCount + 1) + " <strong>" + this.images[imgidx].description + "</strong>");
 				this.update();
 				this.imageContainer.tween('opacity',0,1);
 			}).delay(250,this);
