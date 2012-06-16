@@ -73,17 +73,17 @@ var FSGallery = new Class({
 			});
 			document.id(document.body).adopt(fakeContainer);
 			Array.each(images,function(image,idx){
-				var fakeImg = new Element('img',{
+				(new Element('img',{
 					alt : image.description,
 					title : image.title,
 					events : {
-						load: function() {
-							document.id(document.body).adopt(fakeImg);
+						load: function(e) {
+							document.id(document.body).adopt(e.target);
 							var fsImage = new FSGalleryImage();
-							fsImage.url = fakeImg.get('src');
-							fsImage.title = fakeImg.get('title');
-							fsImage.description = fakeImg.get('alt');
-							fsImage.size = fakeImg.getSize();
+							fsImage.url = e.target.get('src');
+							fsImage.title = e.target.get('title');
+							fsImage.description = e.target.get('alt');
+							fsImage.size = e.target.getSize();
 							if (this.images==null) {
 								this.images=new Array();
 							}
@@ -93,11 +93,10 @@ var FSGallery = new Class({
 								this.Gallery.removeClass('fs_loading');
 								this.next();
 							}
-							fakeImg.dispose();
+							e.target.dispose();
 						}.bind(this)
 					}
-				});
-				fakeImg.set('src',this.options.baseUrl + image.url).inject(fakeContainer);
+				})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(fakeContainer);
 			},this);
 			fakeContainer.dispose();
 			this.update();
