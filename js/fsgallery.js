@@ -59,19 +59,6 @@ var FSGallery = new Class({
 	loadImages: function(images) {
 		(function(){
 			this.isLoading = true;
-
-			var fakeContainer = new Element('div',{
-				styles : {
-					position : 'absolute',
-					top	: 0,
-					left: 0,
-					width: 0,
-					height: 0,
-					overflow: 'hidden',
-					display: 'none'
-				}
-			});
-			document.id(document.body).adopt(fakeContainer);
 			Array.each(images,function(image,idx){
 				(new Element('img',{
 					alt : image.description,
@@ -79,7 +66,6 @@ var FSGallery = new Class({
 					events : {
 						load: function() {
 							var gallery = this.retrieve('gallery');
-							document.id(document.body).adopt(this);
 							var fsImage = new FSGalleryImage();
 							fsImage.url = this.get('src');
 							fsImage.title = this.get('title');
@@ -97,9 +83,8 @@ var FSGallery = new Class({
 							this.dispose();
 						}
 					}
-				})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(fakeContainer);
+				})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(document.id(document.body));
 			},this);
-			fakeContainer.dispose();
 			this.update();
 		}).delay(0,this);
 		return this;
@@ -119,7 +104,7 @@ var FSGallery = new Class({
 		});
 		container.adopt(new Element('div',{
 			styles : {
-				position: 'relative',
+				position: 'absolute',
 				height: '100%',
 				width: '100%',
 				top: 0,

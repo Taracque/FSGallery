@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="css/fsgallery.css" type="text/css" />
 		<script type="text/javascript">
 			window.addEvent('domready',function(){
-				(new FSGallery(null,{title:'képgaléria',marginBottom:48,marginTop:0,autoResize:false,baseUrl:'http://www.metropol.hu/'})).loadJSON('http://www.metropol.hu/gallery.php?gid=1236&json').addEvent('close',function(){ document.id('gallery_here').dispose(); });
+				(new FSGallery(null,{title:'képgaléria',marginBottom:48,marginTop:0,autoResize:true,baseUrl:'http://www.metropol.hu/'})).loadJSON('http://www.metropol.hu/gallery.php?gid=1236&json').addEvent('close',function(){ document.id('gallery_here').dispose(); });
 			});
 		</script>
 	</head>
