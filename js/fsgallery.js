@@ -77,24 +77,25 @@ var FSGallery = new Class({
 					alt : image.description,
 					title : image.title,
 					events : {
-						load: function(e) {
-							document.id(document.body).adopt(e.target);
+						load: function() {
+							var gallery = this.retrieve('gallery');
+							document.id(document.body).adopt(this);
 							var fsImage = new FSGalleryImage();
-							fsImage.url = e.target.get('src');
-							fsImage.title = e.target.get('title');
-							fsImage.description = e.target.get('alt');
-							fsImage.size = e.target.getSize();
-							if (this.images==null) {
-								this.images=new Array();
+							fsImage.url = this.get('src');
+							fsImage.title = this.get('title');
+							fsImage.description = this.get('alt');
+							fsImage.size = this.getSize();
+							if (gallery.images==null) {
+								gallery.images=new Array();
 							}
-							this.images.push( fsImage );
-							this.imageCount++;
-							if (this.imageIndex == -1) {
-								this.Gallery.removeClass('fs_loading');
-								this.next();
+							gallery.images.push( fsImage );
+							gallery.imageCount++;
+							if (gallery.imageIndex == -1) {
+								gallery.Gallery.getChildren('div').removeClass('fs_loading');
+								gallery.next();
 							}
-							e.target.dispose();
-						}.bind(this)
+							this.dispose();
+						}
 					}
 				})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(fakeContainer);
 			},this);
@@ -111,20 +112,22 @@ var FSGallery = new Class({
 				left: 0,
 				right: 0,
 				bottom: 0,
+				width: '100%',
+				height: '100%',
 				'z-index': 65535
-			},
-			'class': 'fs_loading'
+			}
 		});
-		container.set('id','fs-gallery-container').adopt(new Element('div',{
+		container.adopt(new Element('div',{
 			styles : {
 				position: 'relative',
-				top: 0,
-				left: 0,
 				height: '100%',
 				width: '100%',
+				top: 0,
+				left: 0,
 				'background-color': 'black',
 				opacity: 0.85
-			}
+			},
+			'class': 'fs_loading'
 		}));
 		var titleBar = new Element('div',{
 			styles : {
