@@ -84,12 +84,7 @@ var FSGallery = new Class({
 							this.dispose();
 						}
 					}
-<<<<<<< HEAD
 				})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(document.id(document.body));
-=======
-				});
-				fakeImg.set('src', (this.options.baseUrl + image.url) ).inject(fakeContainer);
->>>>>>> Add maximize feature to embedded galleries.
 			},this);
 			this.update();
 		}).delay(0,this);
@@ -103,13 +98,8 @@ var FSGallery = new Class({
 				left: 0,
 				right: 0,
 				bottom: 0,
-<<<<<<< HEAD
 				width: '100%',
 				height: '100%',
-=======
-				height: '100%',
-				width: '100%',
->>>>>>> Add maximize feature to embedded galleries.
 				'z-index': 65535
 			}
 		});
