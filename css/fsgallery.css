@@ -1,7 +1,12 @@
 .fs_closeBox {
-	background: transparent url(../images/window-close.png) no-repeat center;
+	background-image: url(../images/window-maximize.png);
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center;
 }
-
+.maximized .fs_closeBox {
+	background-image: url(../images/window-close.png);
+}
 .fs_titleBar {
 	background: #4f4f4f	-webkit-linear-gradient(bottom, #000 33%, #222 67%);
 }

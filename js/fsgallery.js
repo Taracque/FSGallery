@@ -33,7 +33,8 @@ var FSGallery = new Class({
 		this.images = null;
 		this.image = null;
 		this.isLoading = false;
-
+		this.parentElement = element;
+		this.maximized = (element == null);
 		this.setOptions(options);
 
 		this.createElements( element );
@@ -83,7 +84,12 @@ var FSGallery = new Class({
 							this.dispose();
 						}
 					}
+<<<<<<< HEAD
 				})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(document.id(document.body));
+=======
+				});
+				fakeImg.set('src', (this.options.baseUrl + image.url) ).inject(fakeContainer);
+>>>>>>> Add maximize feature to embedded galleries.
 			},this);
 			this.update();
 		}).delay(0,this);
@@ -97,8 +103,13 @@ var FSGallery = new Class({
 				left: 0,
 				right: 0,
 				bottom: 0,
+<<<<<<< HEAD
 				width: '100%',
 				height: '100%',
+=======
+				height: '100%',
+				width: '100%',
+>>>>>>> Add maximize feature to embedded galleries.
 				'z-index': 65535
 			}
 		});
@@ -136,6 +147,7 @@ var FSGallery = new Class({
 			},
 			'class' : 'fs_closeBox'
 		});
+		
 		closeBox.addEvent('click', this.close.bind(this) );
 		titleBar.adopt( closeBox );
 		
@@ -174,18 +186,33 @@ var FSGallery = new Class({
 
 		if (element) {
 			this.Gallery.setStyle('position','relative');
-			element.adopt( this.Gallery );	
+			element.adopt( this.Gallery );
 		} else {
+			this.Gallery.addClass('maximized');
 			document.id(document.body).adopt( this.Gallery );
 		}
 	},
-	close: function() {
-		if (this.Gallery) {
-			this.Gallery.dispose();
+	close: function(e) {
+		if (this.parentElement) {
+			e.stop();
+			if (this.maximized) {
+				this.Gallery.setStyle('position','relative').removeClass('maximized');
+				this.parentElement.adopt( this.Gallery );
+				this.maximized = false;
+			} else {
+				this.Gallery.setStyle('position','fixed').addClass('maximized');
+				document.id(document.body).adopt( this.Gallery );
+				this.maximized = true;
+			}
+			this.update();
+		} else {
+			if (this.Gallery) {
+				this.Gallery.dispose();
+			}
+			if(this.options.autoResize) window.removeEvent('resize', this.update.bind(this) );
+			if(this.options.keyControl) document.removeEvent('keydown', this.keyTo.bind(this) );
+			this.fireEvent('close');
 		}
-		if(this.options.autoResize) window.removeEvent('resize', this.update.bind(this) );
-		if(this.options.keyControl) document.removeEvent('keydown', this.keyTo.bind(this) );
-		this.fireEvent('close');
 	},
 	wheelTo: function(e) {
 		if(e.wheel > 0) this.prev();
