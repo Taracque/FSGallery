@@ -10,7 +10,8 @@ var FSGalleryImage = new Class({
 	size : {
 		width : 0,
 		height : 0
-	}
+	},
+	html : '' 
 })
 var FSGallery = new Class({
 	Implements: [Events, Options],
@@ -61,30 +62,39 @@ var FSGallery = new Class({
 		(function(){
 			this.isLoading = true;
 			Array.each(images,function(image,idx){
-				(new Element('img',{
-					alt : image.description,
-					title : image.title,
-					events : {
-						load: function() {
-							var gallery = this.retrieve('gallery');
-							var fsImage = new FSGalleryImage();
-							fsImage.url = this.get('src');
-							fsImage.title = this.get('title');
-							fsImage.description = this.get('alt');
-							fsImage.size = this.getSize();
-							if (gallery.images==null) {
-								gallery.images=new Array();
-							}
-							gallery.images.push( fsImage );
-							gallery.imageCount++;
-							if (gallery.imageIndex == -1) {
-								gallery.Gallery.getChildren('div').removeClass('fs_loading');
-								gallery.next();
-							}
-							this.dispose();
-						}
+				if ((image.html) && (image.html!='')) {
+					var fsImage = new FSGalleryImage();
+					if (this.images==null) {
+						this.images=new Array();
 					}
-				})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(document.id(document.body));
+					fsImage.html = image.html;
+					this.images[idx] = fsImage;
+				} else {
+					(new Element('img',{
+						alt : image.description,
+						title : image.title,
+						events : {
+							load: function() {
+								var gallery = this.retrieve('gallery');
+								var fsImage = new FSGalleryImage();
+								fsImage.url = this.get('src');
+								fsImage.title = this.get('title');
+								fsImage.description = this.get('alt');
+								fsImage.size = this.getSize();
+								if (gallery.images==null) {
+									gallery.images=new Array();
+								}
+								gallery.images[idx] = fsImage;
+								gallery.imageCount++;
+								if (gallery.imageIndex == -1) {
+									gallery.Gallery.getChildren('div').removeClass('fs_loading');
+									gallery.next();
+								}
+								this.dispose();
+							}
+						}
+					})).store('gallery',this).set('src',this.options.baseUrl + image.url).inject(document.id(document.body));
+				}
 			},this);
 			this.update();
 		}).delay(0,this);
@@ -100,8 +110,12 @@ var FSGallery = new Class({
 				bottom: 0,
 				width: '100%',
 				height: '100%',
-				'z-index': 65535
-			}
+				'z-index': 65535,
+				'user-select' : 'none',
+				'-webkit-user-select': 'none',
+				'-o-user-select': 'none'
+			},
+			unselectable : 'on'
 		});
 		container.adopt(new Element('div',{
 			styles : {
@@ -210,11 +224,11 @@ var FSGallery = new Class({
 		e.stop().preventDefault();
 	},
 	keyTo: function(e) {
-		if(e.key == "space" || e.key == "left" || e.key =="down") {
+		if(e.key == "space" || e.key == "right" || e.key =="down") {
 			e.stop();
 			this.next();
 		}
-		if(e.key == "backspace" || e.key == "right" || e.key =="up") {
+		if(e.key == "backspace" || e.key == "left" || e.key =="up") {
 			e.stop();
 			this.prev();
 		}
@@ -264,6 +278,13 @@ var FSGallery = new Class({
 				size.y = this.images[this.imageIndex].size.y * ratio;
 			}
 			this.image.setStyles({'width': size.x, 'height' : size.y, 'margin-top' : ( (gallerySize.y - size.y) / 2)});
+			var pSize = this.imageContainer.getElements('p').getCoordinates(this.Gallery);
+			var gSize = this.Gallery.getSize();
+			if (pSize[0].bottom>gSize.y) {
+				this.imageContainer.getElements('p').setStyle('margin-top',- (pSize[0].bottom - gSize.y) );
+			} else {
+				this.imageContainer.getElements('p').setStyle('margin-top',0);
+			}
 		}
 		this.isLoading = false;
 	}
